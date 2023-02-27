@@ -28,13 +28,10 @@ class KmsStore(context: Context) : Store {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun put(keySetID: String?, key: ByteArray?) {
-        try{
-            val editor = preferences.edit()
-            editor.putString(keySetID, Base64.getEncoder().encodeToString(key))
-            editor.apply()
-        } catch(e: java.lang.Exception) {
-            println(e)
-        }
+        val editor = preferences.edit()
+        editor.putString(keySetID, Base64.getEncoder().encodeToString(key))
+        editor.apply()
+
     }
 
 }
