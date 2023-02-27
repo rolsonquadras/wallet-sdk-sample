@@ -139,7 +139,7 @@ createDIDOpts.keyType = "ECDSAP384IEEEP1363"
 
 // Create DID API
 val didDoc = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
-didDocID = didDoc.id() // Save this DID
+didDocID = didDoc.id() // Save this DID; sample ID did:jwk:eyJjcnYiOiJQLTM4NCIsImtpZCI6ImJRTnYzODh3UkpjNFhsZzJaUy03T0VJbVBUaDRhdF9kZDI5aXNwbjJZRlUiLCJrdHkiOiJFQyIsIngiOiJBSVc4NVBjTHg1TE85bmpUY2JyeFBoOW9zSkI3ekFTV0h1bHVPcFFyVkV0UGJ5QmJOd1FBYjNqcXVOWUJlR01jIiwieSI6IjJ1aXV2Njk1eVJoV2l5MXF4ZEVlend0eDQ1bVdBamZiNG94eVZuUWk4V1Z5NGc4WGM5ZngzWFR3TUNyZThacUwifQ
 ```
 
 ##### Swift (iOS)
