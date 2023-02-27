@@ -2,20 +2,11 @@
 Wallet SDK Sample
 
 
-## DID Creation
-### With Key Writer
+## SDK Setup
 
-The Keys used for DID documents are created for you automatically by the key writer.
-
-#### Examples
-
-##### Kotlin (Android)
-
+### KMS 
 ```kotlin
-import dev.trustbloc.wallet.sdk.api.CreateDIDOpts
-import dev.trustbloc.wallet.sdk.did.Creator
 import dev.trustbloc.wallet.sdk.localkms.Localkms
-import dev.trustbloc.wallet.sdk.localkms.MemKMSStore
 
 // Implement KMS Store - here is the sample implementation
 class KmsStore(context: Context) : Store {
@@ -51,17 +42,6 @@ class KmsStore(context: Context) : Store {
 
 // Instantiate LocalKMS from SDK by passing the KMS store
 val kms = Localkms.newKMS(kmsStore())
-
-// Instantiate DID Creator from SDK by passing the KMS
-val didCreator = Creator(kms as KeyWriter)
-
-// Add keyType (P-384) to Create DID Opts
-val createDIDOpts = CreateDIDOpts()
-createDIDOpts.keyType = "ECDSAP384IEEEP1363"
-
-// Create DID API
-val doc = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
-didDocID = doc.id() // Save this DID
 ```
 
 ##### Swift (iOS)
@@ -99,6 +79,57 @@ public class kmsStore: NSObject, LocalkmsStoreProtocol{
 
 // Instantiate LocalKMS from SDK by passing the KMS store
 let kms = LocalkmsNewKMS(kmsStore(), nil)
+```
+
+### DID Resolver
+#### Kotlin (Android)
+
+```kotlin
+import dev.trustbloc.wallet.sdk.did.Resolver
+
+// Setup
+val didResolver = Resolver("")
+```
+
+#### Swift (iOS)
+
+```swift
+import Walletsdk
+
+// Setup
+let didResolver = DidNewResolver("", nil)
+```
+
+
+## DID Creation
+### With Key Writer
+
+The Keys used for DID documents are created for you automatically by the key writer.
+
+#### Examples
+
+##### Kotlin (Android)
+
+```kotlin
+import dev.trustbloc.wallet.sdk.api.CreateDIDOpts
+import dev.trustbloc.wallet.sdk.did.Creator
+
+// Instantiate DID Creator from SDK by passing the KMS
+val didCreator = Creator(kms as KeyWriter)
+
+// Add keyType (P-384) to Create DID Opts
+val createDIDOpts = CreateDIDOpts()
+createDIDOpts.keyType = "ECDSAP384IEEEP1363"
+
+// Create DID API
+val doc = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
+didDocID = doc.id() // Save this DID
+```
+
+##### Swift (iOS)
+
+```swift
+import Walletsdk
 
 // Instantiate DID Creator from SDK by passing the KMS
 let didCreator = DidNewCreatorWithKeyWriter(kms, nil)
@@ -113,5 +144,51 @@ didDocID = didDoc.id_(nil) // Save this DID
 ```
 
 ## Issuance Flow
+
+#### Kotlin (Android)
+
+```kotlin
+import dev.trustbloc.wallet.sdk.did.Resolver
+import dev.trustbloc.wallet.sdk.openid4ci.Interaction
+import dev.trustbloc.wallet.sdk.openid4ci.ClientConfig
+import dev.trustbloc.wallet.sdk.openid4ci.CredentialRequestOpts
+
+// Setup and Instantiate Issuance Interaction object
+val activityLogger = mem.ActivityLogger() // Optional, but useful for tracking credential activities - Validate the requirements
+val cfg = ClientConfig("ClientID", kms.crypto, didResolver, activityLogger)
+val interaction = Interaction("<Issuance_URL>", cfg)
+
+// Start Issuance process
+interaction.authorize() // Ignore the return here
+
+// Resolve the DID created in previous step
+val didDoc = didResolver.Resolve("<did-generated-in-previous-step>")) 
+
+// Call Request credential method
+val credentials = interaction.requestCredential(CredentialRequestOpts("), didDoc.assertionMethod()) // Store this credential
+val issuerURI = interaction.issuerURI() // Store this Issuer URI
+```
+
+#### Swift (iOS)
+
+```swift
+import Walletsdk
+
+// Setup and Instantiate Issuance Interaction object
+let activityLogger = MemNewActivityLogger() // Optional, but useful for tracking credential activities - Validate the requirements
+let cfg =  Openid4ciClientConfig(clientID: "ClientID", kms?.getCrypto(), didRes: didResolver, activityLogger: activityLogger)
+let interaction = Openid4ciNewInteraction("<Issuance_URL>", cfg, nil)
+
+// Start Issuance process
+interaction.authorize() // Ignore the return here
+
+// Resolve the DID created in previous step
+val didDoc = didResolver.Resolve("<did-generated-in-previous-step>")) 
+
+// Call Request credential method
+let credentials = interaction.requestCredential(Openid4ciNewCredentialRequestOpts(""), didDocResolution.assertionMethod()) // Store this credential
+let issuerURI = interaction.issuerURI() // Store this Issuer URI
+```
+
 
 ## Presentation Flow
