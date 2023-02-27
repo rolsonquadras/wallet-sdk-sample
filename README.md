@@ -141,8 +141,8 @@ val createDIDOpts = CreateDIDOpts()
 createDIDOpts.keyType = "ECDSAP384IEEEP1363"
 
 // Create DID API
-val doc = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
-didDocID = doc.id() // Save this DID
+val didDoc = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
+didDocID = didDoc.id() // Save this DID
 ```
 
 ##### Swift (iOS)
@@ -180,7 +180,7 @@ val interaction = Interaction("<Issuance_URL>", cfg)
 // Start Issuance process
 interaction.authorize() // Ignore the return here
 
-// Resolve the DID created in previous step
+// Resolve the DID created in previous step; or if you have diDoc then ignore this step
 val didDoc = didResolver.Resolve("<did-generated-in-previous-step>")) 
 
 // Call Request credential method
@@ -201,11 +201,11 @@ let interaction = Openid4ciNewInteraction("<Issuance_URL>", cfg, nil)
 // Start Issuance process
 interaction.authorize() // Ignore the return here
 
-// Resolve the DID created in previous step
+// Resolve the DID created in previous step; or if you have diDoc then ignore this step
 val didDoc = didResolver.Resolve("<did-generated-in-previous-step>")) 
 
 // Call Request credential method
-let credentials = interaction.requestCredential(Openid4ciNewCredentialRequestOpts(""), didDocResolution.assertionMethod()) // Store this credential
+let credentials = interaction.requestCredential(Openid4ciNewCredentialRequestOpts(""), didDoc.assertionMethod()) // Store this credential
 let issuerURI = interaction.issuerURI() // Store this Issuer URI
 ```
 
