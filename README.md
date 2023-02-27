@@ -100,6 +100,25 @@ import Walletsdk
 let didResolver = DidNewResolver("", nil)
 ```
 
+### Linked Data(LD) Document Loaded
+#### Kotlin (Android)
+
+```kotlin
+import dev.trustbloc.wallet.sdk.ld.DocLoader
+
+// Setup
+val documentLoader = DocLoader()
+```
+
+#### Swift (iOS)
+
+```swift
+import Walletsdk
+
+// Setup
+let documentLoader = LdNewDocLoader()
+```
+
 
 ## DID Creation
 ### With Key Writer
@@ -191,4 +210,74 @@ let issuerURI = interaction.issuerURI() // Store this Issuer URI
 ```
 
 
-## Presentation Flow
+## Presentation Flow (In Progress)
+
+#### Kotlin (Android)
+
+```kotlin
+import dev.trustbloc.wallet.sdk.localkms.Localkms
+import dev.trustbloc.wallet.sdk.localkms.MemKMSStore
+import dev.trustbloc.wallet.sdk.did.Resolver
+import dev.trustbloc.wallet.sdk.did.Creator
+import dev.trustbloc.wallet.sdk.ld.DocLoader
+import dev.trustbloc.wallet.sdk.localkms
+import dev.trustbloc.wallet.sdk.openid4vp
+import dev.trustbloc.wallet.sdk.ld
+import dev.trustbloc.wallet.sdk.credential
+import dev.trustbloc.wallet.sdk.openid4ci.mem
+import dev.trustbloc.wallet.sdk.openid4vp.ClientConfig
+import dev.trustbloc.wallet.sdk.openid4vp.Interaction
+
+// Setup
+val activityLogger = mem.ActivityLogger() // Optional, but useful for tracking credential activities - Validate the requirements
+val cfg = ClientConfig(kms, kms.getCrypto(), didResolver, documentLoader, activityLogger)
+
+// Going through the flow
+val interaction = openid4vp.Interaction(""<Presentation_URL>"", cfg)
+val query = interaction.getQuery()
+val inquirer = credential.Inquirer(docLoader)
+val issuedCredentials = api.VerifiableCredentialsArray() // Would need some actual credentials for this to actually work
+
+// Use this code to display the list of VCs to select which of them to send.
+val matchedRequirements = inquirer.getSubmissionRequirements(query, credentials) 
+val matchedRequirement = matchedRequirements.atIndex(0) // Usually we will have one requirement
+val requirementDesc = matchedRequirement.descriptorAtIndex(0) // Usually requirement will contain one descriptor
+val selectedVCs = api.VerifiableCredentialsArray()
+selectedVCs.add(requirementDesc.matchedVCs.atIndex(0)) // Users should select one VC for each descriptor from the matched list and confirm that they want to share it
+
+val verifiablePres = inquirer.Query(query, credential.CredentialsOpt(selectedVCs))
+interaction.presentCredential(verifiablePres, didDocResolution.assertionMethod())
+// Consider checking the activity log at some point after the interaction
+```
+
+#### Swift (iOS)
+
+```swift
+import Walletsdk
+
+// Setup
+let memKMSStore = LocalkmsNewMemKMSStore()
+let kms = LocalkmsNewKMS(memKMSStore, nil)
+let didResolver = DidNewResolver("", nil)
+let didCreator = DidNewCreatorWithKeyWriter(kms, nil)
+let documentLoader = LdNewDocLoader()
+let activityLogger = MemNewActivityLogger() // Optional, but useful for tracking credential activities
+let clientConfig = Openid4vpClientConfig(keyHandleReader: kms, crypto: kms.getCrypto(), didResolver: didResolver, ldDocumentLoader: documentLoader, activityLogger: activityLogger)
+
+// Going through the flow
+let interaction = Openid4vpInteraction("YourAuthRequestURIHere", config: clientConfig)
+let query = interaction.getQuery()
+let inquirer = CredentialNewInquirer(docLoader)
+let issuedCredentials = ApiVerifiableCredentialsArray() // Would need some actual credentials for this to actually work
+
+// Use this code to display the list of VCs to select which of them to send.
+let matchedRequirements = inquirer.getSubmissionRequirements(query, credentials) 
+let matchedRequirement = matchedRequirements.atIndex(0) // Usually we will have one requirement
+let requirementDesc = matchedRequirement.descriptorAtIndex(0) // Usually requirement will contain one descriptor
+let selectedVCs = ApiVerifiableCredentialsArray()
+selectedVCs.add(requirementDesc.matchedVCs.atIndex(0)) // Users should select one VC for each descriptor from the matched list and confirm that they want to share it
+
+let verifiablePres = inquirer.Query(query, CredentialNewCredentialsOpt(selectedVCs))
+let credentials = interaction.presentCredential(verifiablePres, doc.assertionMethod())
+// Consider checking the activity log at some point after the interaction
+```
