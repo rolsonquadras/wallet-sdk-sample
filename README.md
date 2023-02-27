@@ -49,13 +49,18 @@ class KmsStore(context: Context) : Store {
 }
 
 
-
+// Instantiate LocalKMS from SDK by passing the KMS store
 val kms = Localkms.newKMS(kmsStore())
+
+// Instantiate DID Creator from SDK by passing the KMS
 val didCreator = Creator(kms as KeyWriter)
 
+// Add keyType (P-384) to Create DID Opts
 val createDIDOpts = CreateDIDOpts()
 createDIDOpts.keyType = "ECDSAP384IEEEP1363"
-val didDocResolution = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
+
+// Create DID API
+val doc = didCreator.create("jwk", createDIDOpts) // Create a new did:jwk doc
 didDocID = doc.id() // Save this DID
 ```
 
@@ -91,15 +96,21 @@ public class kmsStore: NSObject, LocalkmsStoreProtocol{
 
 }
 
+
+// Instantiate LocalKMS from SDK by passing the KMS store
 let kms = LocalkmsNewKMS(kmsStore(), nil)
+
+// Instantiate DID Creator from SDK by passing the KMS
 let didCreator = DidNewCreatorWithKeyWriter(kms, nil)
 
+// Add keyType (P-384) to Create DID Opts
 let apiCreate = ApiCreateDIDOpts.init()
 apiCreate.keyType = "ECDSAP384IEEEP1363"
 
+// Create DID API
 let didDoc = didCreator.create("jwk", apiCreate) // Create a new did:jwk doc
 didDocID = didDoc.id_(nil) // Save this DID
-
+```
 
 ## Issuance Flow
 
