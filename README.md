@@ -1,5 +1,9 @@
 # wallet-sdk-sample
-Wallet SDK Sample
+Wallet SDK Sample code
+
+## References
+- [SDK Usage Doc](https://github.com/trustbloc/wallet-sdk/blob/main/cmd/wallet-sdk-gomobile/docs/usage.md)
+- [SDK Best Practices](https://github.com/trustbloc/wallet-sdk/blob/main/docs/bestpractices.md)
 
 
 ## SDK Setup
@@ -257,10 +261,10 @@ let inquirer = CredentialNewInquirer(docLoader)
 
 // Get Presentation query
 let query = interaction.getQuery()
-let issuedCredentials = ApiVerifiableCredentialsArray() // Would need some actual credentials for this to actually work
+let savedCredentials = ApiVerifiableCredentialsArray() // Would need some actual credentials for this to actually work
 
 // pass query and saved credentials to get matched VCs.
-let matchedRequirements = inquirer.getSubmissionRequirements(query, credentials) 
+let matchedRequirements = inquirer.getSubmissionRequirements(query, savedCredentials) 
 
 // Get presentation submission requirements 
 let matchedRequirement = matchedRequirements.atIndex(0) // Usually we will have one requirement
